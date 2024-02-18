@@ -1,17 +1,26 @@
 /** @format */
 
-ul.gallery {
-	position: relative;
+.gallery {
 	display: flex;
+	flex-direction: row;
 	flex-wrap: wrap;
+	gap: 24px;
+	padding: 24px;
 	justify-content: center;
-	list-style-type: none;
-	padding: 0;
 }
-.svg {
-	position: absolute;
+.gallery-item {
+	list-style-type: none;
+}
+.gallery-item:hover {
+	transform: scale(1.04);
+}
 
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+img {
+	display: block;
+	max-width: 100%;
+}
+
+img:hover .svg {
+	display: block;
+	fill: green;
 }

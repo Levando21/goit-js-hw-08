@@ -68,11 +68,11 @@ const images = [
 	},
 ];
 
-const node = document.querySelector(".gallery");
-
 let rowDiv;
 
 images.forEach((image, index) => {
+	const { preview, original, description } = image;
+
 	if (index % 3 === 0) {
 		rowDiv = document.createElement("div");
 		rowDiv.className = "gallery-row";
@@ -102,28 +102,56 @@ images.forEach((image, index) => {
 
 	const newImage = document.createElement("img");
 	newImage.className = "gallery-image";
-	newImage.src = image.preview;
-	newImage.setAttribute("data-source", image.original);
-	newImage.alt = image.description;
+	newImage.src = preview;
+	newImage.setAttribute("data-source", original);
+	newImage.alt = description;
 	newImage.style.width = "380px";
 	newImage.style.height = "210px";
 
-	newCursor.appendChild(newPath);
-	newLi.appendChild(newCursor);
-	newAnchor.appendChild(newImage);
-	newLi.appendChild(newAnchor);
 	rowDiv.appendChild(newLi);
+	newLi.appendChild(newAnchor);
+	newAnchor.appendChild(newCursor);
+	newCursor.appendChild(newPath);
+	newAnchor.appendChild(newImage);
 });
 
-const galleryImages = document.querySelectorAll(".gallery-image");
-galleryImages.forEach((image) => {
-	image.addEventListener("click", callback);
+const galleryItems = document.querySelectorAll(".gallery-item");
+
+galleryItems.forEach((item) => {
+	item.addEventListener("click", (event) => {
+		event.preventDefault();
+		const liElem = event.target.closest(".gallery-item");
+		const dataSource = liElem.querySelector("img").dataset.source;
+		const image = images.find((el) => el.original === dataSource);
+		modal(image);
+	});
 });
 
-function callback(event) {
-	const originalImageSrc = event.target.getAttribute("data-source");
-	const lightbox = basicLightbox.create(
-		`<img src="${originalImageSrc}" alt=""/>`
+function modal(image) {
+	const modal = basicLightbox.create(
+		`
+	<img
+	  class="gallery-image"
+	  src="${image.original}"
+	  data-source="${image.original}"
+	  alt="${image.description}"
+	/>
+        `,
+		{
+			onShow: (instance) => {
+				document.addEventListener("keydown", onModalClose);
+			},
+			onClose: (instance) => {
+				document.removeEventListener("keydown", onModalClose);
+			},
+		}
 	);
-	lightbox.show();
+
+	modal.show();
+
+	function onModalClose(event) {
+		if (event.code === "Escape") {
+			modal.close();
+		}
+	}
 }
